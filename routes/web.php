@@ -25,4 +25,6 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/list', [ListController::class, 'index'])->name('show.expenses');
 Route::post('/add-product', [ListController::class, 'store'])->name('add.expense');
 Route::post('/delete-product', [ListController::class, 'delete'])->name('delete.expense');
+Route::post('/fill-form', [ListController::class, 'fillForm'])->name('fill.form');
+Route::post('/edit-expense', [ListController::class, 'edit'])->name('edit.expense');
 

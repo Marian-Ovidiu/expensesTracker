@@ -11,9 +11,12 @@ use App\Models\User;
 class ListController extends Controller
 {
     public function index(){
-        $expenses = Expense::where('user_id', Auth::id())->get();
+        $expenses = Expense::where('user_id', Auth::id())->where('status', 'active')->get();
 
-        return view('layouts.base', ['expenses' => $expenses]);
+        return view('layouts.base', [
+            'expenses' => $expenses,
+            'mode' => 'insert'
+        ]);
     }
 
     public function store(Request $request)
@@ -28,9 +31,42 @@ class ListController extends Controller
         return redirect()->route('show.expenses');
     }
 
-    public function delete(Expense $expense)
+    public function delete(Request $request)
     {
-        $expense->status='deleted';
+        $data = $request->all();
+        $expense = Expense::where('id', $data['expense'])->first();
+        $expense->status = 'deleted';
+        $expense->update();
+
+        return redirect()->route('show.expenses');
+    }
+
+    public function fillForm(Request $request){
+        $data = $request->all();
+        $expense = Expense::where('id', $data['expense'])->first();
+        $expenses = Expense::where('user_id', Auth::id())->where('status', 'active')->get();
+
+        $date = new \DateTime;
+        $date = $date->createFromFormat('Y-m-d H:i:s', $expense->expense_date)->format('Y-m-d');
+
+        $expense->expense_date = $date;
+
+        return view('layouts.base', [
+            'expense' => $expense,
+            'expenses' => $expenses,
+            'mode' => 'edit'
+        ]);
+    }
+
+    public function edit(Request $request){
+
+        $data = $request->all();
+        $expense = Expense::where('id', $data['id'])->first();
+        $expense->category = $data['category'];
+        $expense->expense_date = $data['expense_date'];
+        $expense->description = $data['description'];
+        $expense->amount = $data['amount'];
+
         $expense->update();
 
         return redirect()->route('show.expenses');
