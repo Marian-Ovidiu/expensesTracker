@@ -12,9 +12,12 @@ class ListController extends Controller
 {
     public function index(){
         $expenses = Expense::where('user_id', Auth::id())->where('status', 'active')->get();
+        $expenses = $expenses->all();
+
+        $expensesByDate = $this->groupByDate($expenses);
 
         return view('layouts.base', [
-            'expenses' => $expenses,
+            'expensesByDate' => $expensesByDate,
             'mode' => 'insert'
         ]);
     }
@@ -45,6 +48,7 @@ class ListController extends Controller
         $data = $request->all();
         $expense = Expense::where('id', $data['expense'])->first();
         $expenses = Expense::where('user_id', Auth::id())->where('status', 'active')->get();
+        $expensesByDate = $this->groupByDate($expenses);
 
         $date = new \DateTime;
         $date = $date->createFromFormat('Y-m-d H:i:s', $expense->expense_date)->format('Y-m-d');
@@ -53,7 +57,7 @@ class ListController extends Controller
 
         return view('layouts.base', [
             'expense' => $expense,
-            'expenses' => $expenses,
+            'expensesByDate' => $expensesByDate,
             'mode' => 'edit'
         ]);
     }
@@ -70,6 +74,31 @@ class ListController extends Controller
         $expense->update();
 
         return redirect()->route('show.expenses');
+    }
+
+    public function groupByDate($expenses){
+        $expensesByDate = [];
+        foreach($expenses as $expense){
+            if($expensesByDate !== []){
+                if(!array_key_exists($expense['expense_date'], $expensesByDate)){
+                    $expensesByDate[$expense['expense_date']][] = $expense;
+                } else {
+                    $checkExpense = false;
+                    foreach($expensesByDate[$expense['expense_date']] as $date){
+                        if($expense['id'] === $date['id']){
+                            $checkExpense = true;
+                        }
+                        if($checkExpense === false){
+                            $expensesByDate[$expense['expense_date']][] = $expense;
+                        }
+                    }
+                }
+            } else {
+                $expensesByDate[$expense['expense_date']][] = $expense;
+            }
+        }
+
+        return $expensesByDate;
     }
 
     protected function isValid($data)
