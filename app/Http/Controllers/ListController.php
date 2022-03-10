@@ -79,23 +79,11 @@ class ListController extends Controller
     public function groupByDate($expenses){
         $expensesByDate = [];
         foreach($expenses as $expense){
-            if($expensesByDate !== []){
-                if(!array_key_exists($expense['expense_date'], $expensesByDate)){
-                    $expensesByDate[$expense['expense_date']][] = $expense;
-                } else {
-                    $checkExpense = false;
-                    foreach($expensesByDate[$expense['expense_date']] as $date){
-                        if($expense['id'] === $date['id']){
-                            $checkExpense = true;
-                        }
-                        if($checkExpense === false){
-                            $expensesByDate[$expense['expense_date']][] = $expense;
-                        }
-                    }
-                }
-            } else {
-                $expensesByDate[$expense['expense_date']][] = $expense;
+            if(!isset($expensesByDate[$expense['expense_date']])) {
+                $expensesByDate[$expense['expense_date']] = [];
             }
+
+            $expensesByDate[$expense['expense_date']][] = $expense;
         }
 
         return $expensesByDate;
