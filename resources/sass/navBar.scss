@@ -1,7 +1,16 @@
-.logo:hover {
-    background-color: #476369;
+.navbar-row{
+    height: 75px;
+    .logo {
+        line-height: 75px;
+        padding: 0 10%;
+
+        a {
+            text-decoration: none;
+        }
+    }
+    .logo:hover {
+        background-color: #476369;
+        transition: 1s;
+    }
 }
-.logo {
-    width: 25%;
-    height: 100%;
-}
+

@@ -15,8 +15,8 @@ class ListController extends Controller
         $expenses = $expenses->all();
 
         $expensesByDate = $this->groupByDate($expenses);
-
-        return view('layouts.base', [
+        //$sortedByDate = $this->sortByDate($expensesByDate);
+        return view('layouts.insertForm', [
             'expensesByDate' => $expensesByDate,
             'mode' => 'insert'
         ]);
@@ -55,7 +55,7 @@ class ListController extends Controller
 
         $expense->expense_date = $date;
 
-        return view('layouts.base', [
+        return view('layouts.updateForm', [
             'expense' => $expense,
             'expensesByDate' => $expensesByDate,
             'mode' => 'edit'
@@ -87,6 +87,30 @@ class ListController extends Controller
         }
 
         return $expensesByDate;
+    }
+
+    public function sortByDate($expenses){
+        $sortedByDate = [];
+
+        $lowed = 9999999999;
+        for($i = 0; $i < count($expenses); $i++){
+            foreach($expenses as $key => $expense){
+                $time1 = strtotime($key);
+                if($time1 < $lowed){
+                    $lowed = $time1;
+                    $date = $key;
+                    $currentExpense = $expense;
+                    // var_dump($time1, $lowed);
+                }
+            }
+            $sortedByDate[$date] = $currentExpense;
+        }
+
+
+
+
+
+        dd($sortedByDate);
     }
 
     protected function isValid($data)

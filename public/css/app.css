@@ -1,12 +1,24 @@
 @import url(https://fonts.googleapis.com/css?family=Nunito);
 @charset "UTF-8";
-.logo:hover {
-  background-color: #476369;
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
-.logo {
-  width: 25%;
-  height: 100%;
+.navbar-row {
+  height: 75px;
+}
+.navbar-row .logo {
+  line-height: 75px;
+  padding: 0 10%;
+}
+.navbar-row .logo a {
+  text-decoration: none;
+}
+.navbar-row .logo:hover {
+  background-color: #476369;
+  transition: 1s;
 }
 
 /*!

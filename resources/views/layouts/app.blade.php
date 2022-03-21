@@ -23,54 +23,44 @@
 </head>
 <body>
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light shadow-sm" style="background-color: #131516; color:white">
-            <div class="container">
-                <div class="col-6">
-                    <div class="logo">Expense Tracker</div>
-                </div>
-                <div class="col-6">
-                    @guest
-                        <div class="row">
-                            <div class="col-6 text-end">
-                                @if (Route::has('login'))
-                                <div class="nav-item">
-                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
-                                </div>
+        <div class="row navbar-row" style="background-color: #131516; color:white">
+            <div class="col-6 logo">Expense Tracker</div>
+            <div class="col-6 menu">
+                @guest
+                    <div class="row logo">
+                        <div class="col-6 text-center" style="line-height: 75px;">
+                            @if (Route::has('login'))
+                                <a class="text-white" href="{{ route('login') }}">{{ __('Login') }}</a>
                             @endif
-                            </div>
-                            <div class="col-6 text-end">
-                                @if (Route::has('register'))
-                                <div class="nav-item">
-                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
-                                </div>
-                            @endif
-                            </div>
                         </div>
-                    @else
-                        <div class="row">
-                            <div class="nav-item col-6"></div>
-                            <div class="nav-item dropdown col-6 text-end">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                        <div class="col-6 text-center" style="line-height: 75px;">
+                            @if (Route::has('register'))
+                                <a class="text-white" href="{{ route('register') }}">{{ __('Register') }}</a>
+                            @endif
+                        </div>
+                    </div>
+                @else
+                    <div class="row logo">
+                        <div class="col-6 text-center">
+                            @if (Route::has('register'))
                                     {{ Auth::user()->name }}
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" href="{{ route('logout') }}"
-                                        onclick="event.preventDefault();
-                                                        document.getElementById('logout-form').submit();">
-                                        {{ __('Logout') }}
-                                    </a>
-                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                        @csrf
-                                    </form>
-                                </div>
-                            </div>
+                            @endif
                         </div>
-                    @endguest
-                </div>
-
+                        <div class="col-6 text-center">
+                            <a href="{{ route('logout') }}" class="text-white"
+                                onclick="event.preventDefault();
+                                                document.getElementById('logout-form').submit();">
+                                {{ __('Logout') }}
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none" hidden>
+                                @csrf
+                            </form>
+                        </div>
+                    </div>
+                @endguest
             </div>
+        </div>
 
-        </nav>
 
         <main class="wrap">
             @yield('content')
