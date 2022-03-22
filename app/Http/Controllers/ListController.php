@@ -15,15 +15,21 @@ class ListController extends Controller
         $expenses = $expenses->all();
 
         $expensesByDate = $this->groupByDate($expenses);
-        //$sortedByDate = $this->sortByDate($expensesByDate);
+
+        krsort($expensesByDate, SORT_NATURAL | SORT_FLAG_CASE);
+
+        $yesterday = $this->totalOfYesterday($expensesByDate);
+        $lastWeek = $this->totalOfLastWeek($expensesByDate);
+
         return view('layouts.insertForm', [
             'expensesByDate' => $expensesByDate,
-            'mode' => 'insert'
+            'mode' => 'insert',
+            'totalOfYesterday' => $yesterday,
+            'totalOfLastWeek' => $lastWeek
         ]);
     }
 
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         $this->isValid($request);
         $data = $request->all();
         $expense = new Expense();
@@ -34,8 +40,7 @@ class ListController extends Controller
         return redirect()->route('show.expenses');
     }
 
-    public function delete(Request $request)
-    {
+    public function delete(Request $request){
         $data = $request->all();
         $expense = Expense::where('id', $data['expense'])->first();
         $expense->status = 'deleted';
@@ -54,11 +59,16 @@ class ListController extends Controller
         $date = $date->createFromFormat('Y-m-d H:i:s', $expense->expense_date)->format('Y-m-d');
 
         $expense->expense_date = $date;
+        krsort($expensesByDate, SORT_NATURAL | SORT_FLAG_CASE);
+        $yesterday = $this->totalOfYesterday($expensesByDate);
+        $lastWeek = $this->totalOfLastWeek($expensesByDate);
 
         return view('layouts.updateForm', [
             'expense' => $expense,
             'expensesByDate' => $expensesByDate,
-            'mode' => 'edit'
+            'mode' => 'edit',
+            'totalOfYesterday' => $yesterday,
+            'totalOfLastWeek' => $lastWeek
         ]);
     }
 
@@ -79,6 +89,7 @@ class ListController extends Controller
     public function groupByDate($expenses){
         $expensesByDate = [];
         foreach($expenses as $expense){
+            $expense['expense_date'] = \DateTime::createFromFormat('Y-m-d H:i:s', $expense['expense_date'])->format('Y-m-d');
             if(!isset($expensesByDate[$expense['expense_date']])) {
                 $expensesByDate[$expense['expense_date']] = [];
             }
@@ -89,32 +100,38 @@ class ListController extends Controller
         return $expensesByDate;
     }
 
-    public function sortByDate($expenses){
-        $sortedByDate = [];
+    public function totalOfYesterday($expenses){
 
-        $lowed = 9999999999;
-        for($i = 0; $i < count($expenses); $i++){
-            foreach($expenses as $key => $expense){
-                $time1 = strtotime($key);
-                if($time1 < $lowed){
-                    $lowed = $time1;
-                    $date = $key;
-                    $currentExpense = $expense;
-                    // var_dump($time1, $lowed);
+        $yesterday = strtotime("-2 day");
+        $total = ['amount' => 0];
+        foreach($expenses as $expense){
+            foreach ($expense as $amount) {
+                if((strtotime($amount['expense_date']) - $yesterday) >= 0){
+                    $total['amount'] += $amount['amount'];
                 }
             }
-            $sortedByDate[$date] = $currentExpense;
         }
 
-
-
-
-
-        dd($sortedByDate);
+        return $total;
     }
 
-    protected function isValid($data)
-    {
+    public function totalOfLastWeek($expenses){
+
+        $lastWeek = strtotime("-1 week");
+
+        $total = ['amount' => 0];
+        foreach($expenses as $expense){
+            foreach ($expense as $date) {
+                if((strtotime($date['expense_date']) - $lastWeek) >= 0){
+                    $total['amount'] += $date['amount'];
+                }
+            }
+        }
+
+        return $total;
+    }
+
+    protected function isValid($data){
       $data->validate([
         'category' => 'required|max:255',
         'amount' => 'required',
