@@ -14,19 +14,21 @@ class ListController extends Controller
         $expenses = Expense::where('user_id', Auth::id())->where('status', 'active')->get();
         $expenses = $expenses->all();
 
-        $expensesByDate = $this->groupByDate($expenses);
+        //$expensesByDate = $this->groupByDate($expenses);
 
-        krsort($expensesByDate, SORT_NATURAL | SORT_FLAG_CASE);
+        // krsort($expensesByDate, SORT_NATURAL | SORT_FLAG_CASE);
 
-        $yesterday = $this->totalOfYesterday($expensesByDate);
-        $lastWeek = $this->totalOfLastWeek($expensesByDate);
+        // $yesterday = $this->totalOfYesterday($expensesByDate);
+        // $lastWeek = $this->totalOfLastWeek($expensesByDate);
 
-        return view('layouts.insertForm', [
-            'expensesByDate' => $expensesByDate,
-            'mode' => 'insert',
-            'totalOfYesterday' => $yesterday,
-            'totalOfLastWeek' => $lastWeek
-        ]);
+        return json_encode($expenses);
+
+        // return view('layouts.insertForm', [
+        //     'expensesByDate' => $expensesByDate,
+        //     'mode' => 'insert',
+        //     'totalOfYesterday' => $yesterday,
+        //     'totalOfLastWeek' => $lastWeek
+        // ]);
     }
 
     public function store(Request $request){

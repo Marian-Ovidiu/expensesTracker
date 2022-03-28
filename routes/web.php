@@ -15,14 +15,14 @@ use App\Http\Controllers\ListController;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/list', function () {
+    return view('index');
 });
 
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/list', [ListController::class, 'index'])->name('show.expenses');
+Route::post('/list', [ListController::class, 'index'])->name('show.expenses');
 Route::post('/add-product', [ListController::class, 'store'])->name('add.expense');
 Route::post('/delete-product', [ListController::class, 'delete'])->name('delete.expense');
 Route::post('/fill-form', [ListController::class, 'fillForm'])->name('fill.form');
