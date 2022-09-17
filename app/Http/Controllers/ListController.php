@@ -18,6 +18,8 @@ class ListController extends Controller
 
         // krsort($expensesByDate, SORT_NATURAL | SORT_FLAG_CASE);
 
+
+
         // $yesterday = $this->totalOfYesterday($expensesByDate);
         // $lastWeek = $this->totalOfLastWeek($expensesByDate);
 
